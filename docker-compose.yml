@@ -1,0 +1,22 @@
+version: '2.34.0'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cards-site:latest
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8080"
+    command: ["/app/web", "--config", "cmd/web/config.yaml"]
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cards-site:test
+    command: ["go", "test", "./..."]
+    volumes:
+      - .:/app
+    working_dir: /app

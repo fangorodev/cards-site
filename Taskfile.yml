@@ -1,0 +1,46 @@
+version: '3'
+
+vars:
+  BINARY: bin/web
+
+tasks:
+  #install frontend (deps); build Tailwind-CSS
+  css:
+    cmds:
+      - npm ci
+      - npx tailwindcss -i web/src/input.css -o internal/assets/css/tailwind.css --minify
+    desc: "Compile Tailwind-CSS"
+
+  # Build Golang binaries
+  build:
+    cmds:
+      - go build -o {{.BINARY}} ./cmd/web
+    deps:
+      - css
+    desc: "Go Build!"
+
+  # Run local go unit tests
+  test:
+    cmds:
+      - go test ./...
+    desc: "Run tests..."
+
+  # Test build run
+  docker-up:
+    cmds:
+      - docker-compose up --build --abort-on-container-exit
+    desc: "Build & Run services"
+
+  clean:
+    cmds:
+      - rm -rf bin internal/assets/css/tailwind.css
+    desc: "Remove build artifacts"
+
+  # All in one: build, test, package
+  all:
+    cmds:
+      - task clean
+      - task build
+      - task test
+      - task docker-up
+    desc: "Clean, build, test, and run in Docker"
