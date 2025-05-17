@@ -44,3 +44,8 @@ tasks:
       - task test
       - task docker-up
     desc: "Clean, build, test, and run in Docker"
+  dev:
+    cmds:
+      - task css
+      - air -c .air.toml
+    desc: "Run development server with live reload"
