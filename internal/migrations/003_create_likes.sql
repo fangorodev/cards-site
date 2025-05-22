@@ -1,0 +1,7 @@
+CREATE TABLE likes (
+  id         SERIAL PRIMARY KEY,
+  user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  card_id    INTEGER NOT NULL REFERENCES cards(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  UNIQUE(user_id, card_id)
+);

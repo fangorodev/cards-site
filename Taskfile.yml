@@ -4,11 +4,13 @@ vars:
   BINARY: bin/web
 
 tasks:
-  #install frontend (deps); build Tailwind-CSS
+  # install frontend (deps); build Tailwind-CSS
+  # must have basic package.json
   css:
     cmds:
-      - npm ci
-      - npx tailwindcss -i web/src/input.css -o internal/assets/css/tailwind.css --minify
+      # - cd web && npm install
+      - cd web && npm ci
+      - cd web && npx tailwindcss -i src/input.css -o ../internal/assets/css/tailwind.css --minify
     desc: "Compile Tailwind-CSS"
 
   # Build Golang binaries

@@ -20,3 +20,16 @@ services:
     volumes:
       - .:/app
     working_dir: /app
+
+  services:
+    db:
+      image: postgres:15-alpine
+      volumes:
+        - ./internal/migrations:/migrations
+    migrate:
+      image: migrate/migrate:4.15.2
+      entrypoint: >
+        sh -c "
+        until pg_isready -h db; do sleep 1; done;
+        migrate -path=/migrations -database postgres://postgres:example@db:5432/postgres?sslmode=disable up
+        "

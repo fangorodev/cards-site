@@ -1,0 +1,14 @@
+{
+  "name": "cards-site",
+  "version": "1.0.0",
+  "description": "Base Desc",
+  "scripts": {
+    "build": "task build",
+    "test": "task test",
+    "start": "task dev"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "tailwindcss": "^3.0.0"
+  }
+}
