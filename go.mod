@@ -6,7 +6,7 @@ require (
 	github.com/GoAdminGroup/go-admin v1.2.26
 	github.com/GoAdminGroup/themes v0.0.45
 	github.com/gin-gonic/gin v1.10.0
-	github.com/lib/pq v1.10.9
+	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 )
 
 require (
@@ -34,6 +34,7 @@ require (
 	github.com/klauspost/cpuid/v2 v2.2.7 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
+	github.com/lib/pq v1.10.9 // indirect
 	github.com/markbates/errx v1.1.0 // indirect
 	github.com/markbates/oncer v1.0.0 // indirect
 	github.com/markbates/safe v1.0.1 // indirect

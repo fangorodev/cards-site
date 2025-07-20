@@ -11,3 +11,5 @@ go get github.com/gin-gonic/gin
 
 * GoAdmin
 go get github.com/GoAdminGroup/go-admin/...
+
+-> Allow for git config (fangorodev)
