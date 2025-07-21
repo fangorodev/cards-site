@@ -9,7 +9,5 @@ go get github.com/golang-migrate/migrate/v4
 * Gin (HTTP router)
 go get github.com/gin-gonic/gin
 
-* GoAdmin
+* GoAdmin (deprecated)
 go get github.com/GoAdminGroup/go-admin/...
-
--> Allow for git config (fangorodev)

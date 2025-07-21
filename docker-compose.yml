@@ -9,6 +9,8 @@ services:
       - .:/app
     ports:
       - "8080:8080"
+    environment:
+      - DB_DSN=postgres://postgres:example@db:5432/postgres?sslmode=disable
     command: ["/app/web", "--config", "cmd/web/config.yaml"]
 
   test:
@@ -20,16 +22,29 @@ services:
     volumes:
       - .:/app
     working_dir: /app
+    environment:
+      - DB_DSN=postgres://postgres:example@db:5432/postgres?sslmode=disable
 
-  services:
-    db:
-      image: postgres:15-alpine
-      volumes:
-        - ./internal/migrations:/migrations
-    migrate:
-      image: migrate/migrate:4.15.2
-      entrypoint: >
-        sh -c "
-        until pg_isready -h db; do sleep 1; done;
-        migrate -path=/migrations -database postgres://postgres:example@db:5432/postgres?sslmode=disable up
-        "
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD: 123123
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./internal/migrations:/
+      - db_data:/var/lib/postgresql/data
+
+  migrate:
+    image: migrate/migrate:4.15.2
+    depends_on:
+      - db
+    entrypoint: >
+      sh -c '
+      until pg_isready -h db -p 5432; do sleep 1; done;
+      migrate -path=/migrations -database "{DB_DSN}" up
+      '
+
+volumes:
+  db_data:
