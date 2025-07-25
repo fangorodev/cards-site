@@ -24,7 +24,7 @@ RUN apk add --no-cache ca-certificates
 WORKDIR /app
 
 # Copy only the compiled binary from builder
-COPY --from=builder /app/cards-site ./
+COPY --from=builder /app/cards-site .
 
 # For the image to include config.yml without mounting:
 COPY --from=builder /app/cmd/web/config.yaml cmd/web/config.yaml
@@ -36,5 +36,5 @@ RUN chmod +x cards-site
 EXPOSE 8080
 
 # Default entrypoint and arguments
-ENTRYPOINT ["./cards-site"]
+ENTRYPOINT ["/app/cards-site"]
 CMD ["--config", "cmd/web/config.yaml"]
