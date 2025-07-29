@@ -13,7 +13,7 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux \
     go build -ldflags="-s -w" \
-    -o cards-site ./cmd/web
+    -o bin/web-server ./cmd/web
 
 # ─── Final Stage ──────────────────────────────────────────────────────────────
 FROM alpine:latest
@@ -23,18 +23,20 @@ RUN apk add --no-cache ca-certificates
 
 WORKDIR /app
 
+RUN mkdir -p bin
+
 # Copy only the compiled binary from builder
-COPY --from=builder /app/cards-site .
+COPY --from=builder /app/bin/web-server bin/web-server
 
 # For the image to include config.yml without mounting:
 COPY --from=builder /app/cmd/web/config.yaml cmd/web/config.yaml
 
 # Executable
-RUN chmod +x cards-site
+RUN chmod +x bin/web-server
 
 # Expose the port defined in your config.yml
 EXPOSE 8080
 
 # Default entrypoint and arguments
-ENTRYPOINT ["/app/cards-site"]
+ENTRYPOINT ["/app/bin/web-server"]
 CMD ["--config", "cmd/web/config.yaml"]

@@ -6,7 +6,7 @@ services:
     image: cards-site:latest
     ports:
       - "8080:8080"
-    command: ["./cards-site", "--config", "cmd/web/config.yaml"]
+    command: ["/app/bin/web-server", "--config", "cmd/web/config.yaml"]
 
   test:
     build:
@@ -40,6 +40,8 @@ services:
       - db
     volumes:
       - ./internal/migrations:/migrations
+    environment:
+      - DB_DSN=postgres://postgres:123123@db:5432/postgres?sslmode=disable
 
 volumes:
   db_data:
