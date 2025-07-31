@@ -30,7 +30,6 @@ tasks:
   # Test build run
   docker-up:
     cmds:
-      - envsubst < cmd/web/config.yaml > cmd/web/config.generated.yaml
       - docker-compose up --build --abort-on-container-exit
     desc: "Build & Run services"
 

@@ -11,28 +11,23 @@ RUN go mod download
 
 # Copy source code and build the 'web' binary
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux \
-    go build -ldflags="-s -w" \
-    -o bin/web-server ./cmd/web
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o bin/web-server ./cmd/web
 
 # ─── Final Stage ──────────────────────────────────────────────────────────────
 FROM alpine:latest
 
 # Include certificates for HTTPS clients
 RUN apk add --no-cache ca-certificates
-
+RUN apk add --no-cache file
 WORKDIR /app
 
+#* Bin directory, copy binary + config
 RUN mkdir -p bin
-
-# Copy only the compiled binary from builder
-COPY --from=builder /app/bin/web-server bin/web-server
-
-# For the image to include config.yml without mounting:
-COPY --from=builder /app/cmd/web/config.yaml cmd/web/config.yaml
+COPY --from=builder /app/bin/web-server /app/bin/web-server
+COPY --from=builder /app/cmd/web/config.yaml /app/cmd/web/config.yaml
 
 # Executable
-RUN chmod +x bin/web-server
+RUN chmod +x /app/bin/web-server
 
 # Expose the port defined in your config.yml
 EXPOSE 8080

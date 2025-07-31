@@ -6,7 +6,8 @@ services:
     image: cards-site:latest
     ports:
       - "8080:8080"
-    command: ["/app/bin/web-server", "--config", "cmd/web/config.yaml"]
+    environment:
+      - DB_DSN=postgres://postgres:123123@db:5432/postgres?sslmode=disable
 
   test:
     build:
@@ -17,6 +18,8 @@ services:
     volumes:
       - .:/app
     working_dir: /app
+    environment:
+      - DB_DSN=postgres://postgres:123123@db:5432/postgres?sslmode=disable
 
   db:
     image: postgres:15-alpine
@@ -28,8 +31,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./internal/migrations:/migrations
       - db_data:/var/lib/postgresql/data
+      - ./internal/migrations:/migrations:ro
 
   migrate:
     build:
@@ -39,7 +42,7 @@ services:
     depends_on:
       - db
     volumes:
-      - ./internal/migrations:/migrations
+      - ./internal/migrations:/migrations:ro
     environment:
       - DB_DSN=postgres://postgres:123123@db:5432/postgres?sslmode=disable
 
