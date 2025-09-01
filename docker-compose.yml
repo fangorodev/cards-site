@@ -1,26 +1,4 @@
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: cards-site:latest
-    ports:
-      - "8080:8080"
-    environment:
-      - DB_DSN=postgres://postgres:123123@db:5432/postgres?sslmode=disable
-
-  test:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: cards-site:test
-    command: ["go", "test", "./..."]
-    volumes:
-      - .:/app
-    working_dir: /app
-    environment:
-      - DB_DSN=postgres://postgres:123123@db:5432/postgres?sslmode=disable
-
   db:
     image: postgres:15-alpine
     restart: always
@@ -33,18 +11,56 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./internal/migrations:/migrations:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 5
 
   migrate:
     build:
       context: .
       dockerfile: Dockerfile.migrate
-    image: migrate/migrate:v4.15.2
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - ./internal/migrations:/migrations:ro
     environment:
-      - DB_DSN=postgres://postgres:123123@db:5432/postgres?sslmode=disable
+      - "DB_DSN=postgres://postgres:123123@db:5432/postgres?sslmode=disable"
+    working_dir: /
+    restart: "no"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cards-site:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - "DB_DSN=postgres://postgres:123123@db:5432/postgres?sslmode=disable"
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    restart: on-failure
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cards-site:test
+    command: ["go", "test", "./..."]
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      - "DB_DSN=postgres://postgres:123123@db:5432/postgres?sslmode=disable"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
 
 volumes:
   db_data:

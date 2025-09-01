@@ -41,6 +41,7 @@ func loadConfig(path string) (*Config, error) {
 func main() {
 	// Parse flag/s
 	cfgPath := flag.String("config", "cmd/web/config.yaml", "Path to config file")
+	dsnFlag := flag.String("dsn", "", "Overriden DSN")
 	flag.Parse()
 
 	// Load config
@@ -49,8 +50,22 @@ func main() {
 		log.Fatalf("Failure at config load: %v", err)
 	}
 
+	env := os.Getenv("DB_DSN")
+
+	var dsn string
+	switch {
+	case *dsnFlag != "":
+		dsn = *dsnFlag
+	case env != "":
+		dsn = env
+	case conf.DSN != "":
+		dsn = conf.DSN
+	default:
+		log.Fatal("No DSN provided (set --dsn, DB_DSN, or dsn in config.yaml)")
+	}
+
 	// DB Connection
-	db, err := sqlx.Connect("postgres", conf.DSN) 
+	db, err := sqlx.Connect("postgres", dsn) 
 	if err != nil {
 		log.Fatalf("Failure at DB connection: %v", err)
 	}

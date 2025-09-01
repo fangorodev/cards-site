@@ -3,4 +3,16 @@ FROM migrate/migrate:v4.15.2
 # pg_isready
 RUN apk add --no-cache postgresql-client
 
-ENTRYPOINT [ "sh", "-c", "until pg_isready -h db -p 5432; do sleep 1; done; migrate -path=migrations -database \"${DB_DSN}\" up "]
+WORKDIR /migrations
+COPY /internal/migrations/. .
+
+ENV DB_DSN="postgres://postgres:123123@db:5432/postgres?sslmode=disable"
+
+#ENTRYPOINT ["sh", "-c", "until pg_isready -h db -p 5432; do sleep 1; done; CLEAN_DSN=$(printf '%s' \"$DB_DSN\" | tr -d '\\r\\n '); migrate -source file:///migrations -database \"$CLEAN_DSN\" up"]
+#ENTRYPOINT ["sh", "-c", "until pg_isready -h db -p 5432; do sleep 1; done; migrate -source file:///migrations -database \"$DB_DSN\" up"]
+ENTRYPOINT ["sh", "-c", "\
+  until pg_isready -h db -p 5432; do sleep 1; done; \
+  CLEAN_DSN=$(printf '%s' \"$DB_DSN\" | tr -d '\\r\\n '); \
+  echo \"Running migrations from /migrations with DSN: $CLEAN_DSN\"; \
+  migrate -path=/migrations -database \"$CLEAN_DSN\" up \
+"]

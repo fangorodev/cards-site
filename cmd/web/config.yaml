@@ -1,2 +1,2 @@
 port: 8080
-dsn: postgres://postgres:123123@db:5432/postgres?sslmode=disable
+dsn: ""

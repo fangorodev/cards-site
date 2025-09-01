@@ -19,19 +19,17 @@ FROM alpine:latest
 # Include certificates for HTTPS clients
 RUN apk add --no-cache ca-certificates
 RUN apk add --no-cache file
-WORKDIR /app
 
-#* Bin directory, copy binary + config
-RUN mkdir -p bin
-COPY --from=builder /app/bin/web-server /app/bin/web-server
-COPY --from=builder /app/cmd/web/config.yaml /app/cmd/web/config.yaml
+#* Copy bin to system
+COPY --from=builder /app/bin/web-server /usr/local/bin/web-server
+COPY --from=builder /app/cmd/web/config.yaml /etc/cards-site/config.yaml
 
 # Executable
-RUN chmod +x /app/bin/web-server
+RUN chmod +x /usr/local/bin/web-server
 
 # Expose the port defined in your config.yml
 EXPOSE 8080
 
 # Default entrypoint and arguments
-ENTRYPOINT ["/app/bin/web-server"]
-CMD ["--config", "cmd/web/config.yaml"]
+ENTRYPOINT ["/usr/local/bin/web-server"]
+CMD ["--config", "/etc/cards-site/config.yaml"]
