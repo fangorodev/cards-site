@@ -30,7 +30,7 @@ tasks:
   # Test build run
   docker-up:
     cmds:
-      - docker-compose up --build --abort-on-container-exit
+      - docker-compose up --build
     desc: "Build & Run services"
 
   clean:

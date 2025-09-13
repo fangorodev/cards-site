@@ -4,7 +4,7 @@ FROM migrate/migrate:v4.15.2
 RUN apk add --no-cache postgresql-client
 
 WORKDIR /migrations
-COPY /internal/migrations/. .
+COPY internal/migrations/. .
 
 ENV DB_DSN="postgres://postgres:123123@db:5432/postgres?sslmode=disable"
 
